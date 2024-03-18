@@ -45,3 +45,43 @@ RepoSpec repo = parser.parse("""
 }
 """);
 ```
+
+## Getting Started
+
+Add this to your `settings.gradle(.kts)`:
+
+```groovy
+// groovy
+sourceControl {
+    gitRepository("https://github.com/CRModders/JavaCRM1.git") {
+        producesModule("io.github.crmodders.javacrm1:JavaCRM1")
+    }
+}
+```
+
+```kotlin
+// kotlin
+import java.net.URI
+
+sourceControl {
+    gitRepository(URI("https://github.com/CRModders/JavaCRM1.git")) {
+        producesModule("io.github.crmodders.javacrm1:JavaCRM1")
+    }
+}
+```
+
+...And in your `build.gradle(.kts)`:
+
+```groovy
+// groovy
+dependencies {
+    implementation "io.github.crmodders.javacrm1:JavaCRM1:v1.0.1"
+}
+```
+
+```kotlin
+// kotlin
+dependencies {
+    implementation("io.github.crmodders.javacrm1:JavaCRM1:v1.0.1")
+}
+```
