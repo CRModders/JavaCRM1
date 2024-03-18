@@ -8,7 +8,10 @@ import org.hjson.JsonObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.Console;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -54,7 +57,7 @@ class TestV1Parser {
             """;
 
     @Test
-    @DisplayName("Test v1 parser")
+    @DisplayName("Test V1 parser")
     void testV1Parser() {
         V1Parser parser = new V1Parser();
         RepoSpec repo = parser.parse(TEST_SPEC);
@@ -71,7 +74,8 @@ class TestV1Parser {
         assertEquals("0.6.9", firstMod.version(), "firstMod.version");
         assertEquals("0.1.7", firstMod.gameVersion(), "firstMod.gameVersion");
         assertEquals("https://example.com/WireMod-0.6.9.jar", firstMod.url(), "firstMod.url");
-        assertEquals(List.of(new DependencySpec("io.github.crmodders.wirelib", "4.2.0", "io.github.crmodders")), firstMod.deps(), "firstMod.deps");
+        assertEquals(List.of(new DependencySpec("io.github.crmodders.wirelib", "4.2.0", "io.github.crmodders")),
+                firstMod.deps(), "firstMod.deps");
         JsonObject ext = new JsonObject();
         ext.add("icon", "https://example.com/WireMod.png");
         assertEquals(ext, firstMod.ext(), "firstMod.ext");
