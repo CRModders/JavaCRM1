@@ -1,4 +1,4 @@
-package io.github.crmodders.javacrm1.impl.v1;
+package io.github.crmodders.javacrm1.impl.v2;
 
 import io.github.crmodders.javacrm1.*;
 import io.github.crmodders.javacrm1.api.AbstractParser;
@@ -10,13 +10,13 @@ import org.hjson.JsonValue;
 import java.util.ArrayList;
 import java.util.List;
 
-public class V1Parser extends AbstractParser {
-    public V1Parser() {
-        super(1);
+public class V2Parser extends AbstractParser {
+    public V2Parser() {
+        super(2);
     }
 
     @Override
-    public V1RepoSpec parse(String hjson) {
+    public V2RepoSpec parse(String hjson) {
         JsonObject repo = JsonValue.readHjson(hjson).asObject();
 
         int specVersion = HJsonUtil.getOrThrow(repo, "specVersion").asInt();
@@ -26,14 +26,16 @@ public class V1Parser extends AbstractParser {
         String rootId = HJsonUtil.getOrThrow(repo, "rootId").asString();
         int lastUpdated = HJsonUtil.getOrThrow(repo, "lastUpdated").asInt();
 
+        List<String> repoDeps = HJsonUtil.getStringArray(repo, "deps");
+
         JsonArray mods = HJsonUtil.getOrThrow(repo, "mods").asArray();
-        List<V1ModSpec> modSpecs = new ArrayList<>();
+        List<V2ModSpec> modSpecs = new ArrayList<>();
         mods.forEach(mod -> modSpecs.add(parseModSpec(mod.asObject(), rootId)));
 
-        return new V1RepoSpec(specVersion, rootId, lastUpdated, modSpecs);
+        return new V2RepoSpec(specVersion, rootId, lastUpdated, repoDeps, modSpecs);
     }
 
-    public V1ModSpec parseModSpec(JsonObject object, String defaultSource) {
+    public V2ModSpec parseModSpec(JsonObject object, String defaultSource) {
         String id = HJsonUtil.getOrThrow(object, "id").asString();
         String name = HJsonUtil.getOrThrow(object, "name").asString();
         String desc = HJsonUtil.getOrThrow(object, "desc").asString();
@@ -43,14 +45,14 @@ public class V1Parser extends AbstractParser {
         String url = HJsonUtil.getOrThrow(object, "url").asString();
 
         JsonArray deps = HJsonUtil.getOrThrow(object, "deps").asArray();
-        List<V1DependencySpec> dependencySpecs = new ArrayList<>();
+        List<V2DependencySpec> dependencySpecs = new ArrayList<>();
         deps.forEach(dep -> dependencySpecs.add(parseDependencySpec(dep.asObject(), defaultSource)));
 
         JsonObject ext = HJsonUtil.contains(object, "ext") ?
                 object.get("ext").asObject() :
                 new JsonObject();
 
-        return new V1ModSpec(
+        return new V2ModSpec(
                 id,
                 name,
                 desc,
@@ -63,10 +65,10 @@ public class V1Parser extends AbstractParser {
         );
     }
 
-    public V1DependencySpec parseDependencySpec(JsonObject object, String defaultSource) {
+    public V2DependencySpec parseDependencySpec(JsonObject object, String defaultSource) {
         String id = HJsonUtil.getOrThrow(object, "id").asString();
         String version = HJsonUtil.getOrThrow(object, "version").asString();
         String source = object.getString("source", defaultSource);
-        return new V1DependencySpec(id, version, source);
+        return new V2DependencySpec(id, version, source);
     }
 }

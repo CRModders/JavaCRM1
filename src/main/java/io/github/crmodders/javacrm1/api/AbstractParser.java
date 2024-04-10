@@ -1,11 +1,11 @@
 package io.github.crmodders.javacrm1.api;
 
 public abstract class AbstractParser {
-    public final String crmVersion;
+    public final int crmVersion;
 
-    public AbstractParser(String crmVersion) {
+    public AbstractParser(int crmVersion) {
         this.crmVersion = crmVersion;
     }
 
-    public abstract RepoSpec parse(String hjson);
+    public abstract IRepoSpec parse(String hjson);
 }

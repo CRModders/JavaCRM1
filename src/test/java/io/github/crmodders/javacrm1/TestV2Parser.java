@@ -1,9 +1,9 @@
 package io.github.crmodders.javacrm1;
 
-import io.github.crmodders.javacrm1.impl.v1.V1DependencySpec;
-import io.github.crmodders.javacrm1.impl.v1.V1ModSpec;
-import io.github.crmodders.javacrm1.impl.v1.V1Parser;
-import io.github.crmodders.javacrm1.impl.v1.V1RepoSpec;
+import io.github.crmodders.javacrm1.impl.v2.V2DependencySpec;
+import io.github.crmodders.javacrm1.impl.v2.V2ModSpec;
+import io.github.crmodders.javacrm1.impl.v2.V2Parser;
+import io.github.crmodders.javacrm1.impl.v2.V2RepoSpec;
 
 import org.hjson.JsonObject;
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +13,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TestV1Parser {
+class TestV2Parser {
 
     public static final String TEST_SPEC = """
             {
-                specVersion: 1
+                specVersion: 2
                 rootId: io.github.crmodders
                 lastUpdated: 0
+                deps: [
+                    "https://example.com/repo.hjson"
+                ]
                 mods: [
                     {
                         id: io.github.crmodders.wiremod
@@ -33,6 +36,7 @@ class TestV1Parser {
                             {
                                 id: io.github.crmodders.wirelib
                                 version: 4.2.0
+                                source: io.github.crmodders
                             }
                         ]
                         ext: {
@@ -54,27 +58,28 @@ class TestV1Parser {
             }
             """;
 
-    V1RepoSpec parse() {
-        V1Parser parser = new V1Parser();
+    V2RepoSpec parse() {
+        V2Parser parser = new V2Parser();
         return parser.parse(TEST_SPEC);
     }
 
     @Test
-    @DisplayName("Test V1 parser - parse")
-    void testRoot() {
+    @DisplayName("Test V2 parser - root")
+    void testV2Parser() {
         var repo = parse();
 
-        assertEquals(1, repo.specVersion(), "repo.specVersion");
+        assertEquals(2, repo.specVersion(), "repo.specVersion");
         assertEquals("io.github.crmodders", repo.rootId(), "repo.rootId");
         assertEquals(0, repo.lastUpdated(), "repo.lastUpdated");
+        assertEquals(List.of("https://example.com/repo.hjson"), repo.deps(), "repo.deps");
     }
 
     @Test
-    @DisplayName("Test V1 parser - first mod")
+    @DisplayName("Test V2 parser - first mod")
     void testFirstMod() {
         var repo = parse();
 
-        V1ModSpec firstMod = repo.mods().get(0);
+        V2ModSpec firstMod = repo.mods().get(0);
         assertEquals("io.github.crmodders.wiremod", firstMod.id(), "firstMod.id");
         assertEquals("WireMod", firstMod.name(), "firstMod.name");
         assertEquals("Mod that adds wiring to Cosmic Reach.", firstMod.desc(), "firstMod.desc");
@@ -82,7 +87,7 @@ class TestV1Parser {
         assertEquals("0.6.9", firstMod.version(), "firstMod.version");
         assertEquals("0.1.7", firstMod.gameVersion(), "firstMod.gameVersion");
         assertEquals("https://example.com/WireMod-0.6.9.jar", firstMod.url(), "firstMod.url");
-        assertEquals(List.of(new V1DependencySpec("io.github.crmodders.wirelib", "4.2.0", "io.github.crmodders")),
+        assertEquals(List.of(new V2DependencySpec("io.github.crmodders.wirelib", "4.2.0", "io.github.crmodders")),
                 firstMod.deps(), "firstMod.deps");
         JsonObject ext = new JsonObject();
         ext.add("icon", "https://example.com/WireMod.png");
@@ -90,11 +95,11 @@ class TestV1Parser {
     }
 
     @Test
-    @DisplayName("Test V1 parser - second mod")
+    @DisplayName("Test V2 parser - second mod")
     void testSecondMod() {
         var repo = parse();
 
-        V1ModSpec secondMod = repo.mods().get(1);
+        V2ModSpec secondMod = repo.mods().get(1);
         assertEquals("io.github.crmodders.wirelib", secondMod.id(), "secondMod.id");
         assertEquals("WireLib", secondMod.name(), "secondMod.name");
         assertEquals("Shared code mod for wiring primarily used in WireMod.", secondMod.desc(), "secondMod.desc");
